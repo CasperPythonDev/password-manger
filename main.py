@@ -1,19 +1,32 @@
 import tkinter as tk
+from tkinter import messagebox
 
 DEFAULT_USER = "xxx@gmail.com"  # add os and .env
 # ---------------------------- PASSWORD GENERATOR ------------------------------- #
 
 # ---------------------------- SAVE PASSWORD ------------------------------- #
-path_storage = "storage/pw.txt"
+path_storage = "storage/data.txt"
 
 
 def store_pw():
-    email = entry_website.get()
+    website = entry_website.get()
     user = entry_user.get()
     pw = entry_password.get()
-    string = f"email: {email} | user: {user} | pw: {pw}\n"
-    with open(path_storage, "a") as file:
-        file.write(string)
+
+    save = messagebox.askokcancel(
+        title=website,
+        message=f"These are the details entered: \nEmail: {user}\nPassword: {pw}",
+    )
+    if save:
+        data = f"email: {website} | user: {user} | pw: {pw}\n"
+
+        with open(path_storage, "a") as file:
+            file.write(data)
+        entry_website.delete(0, tk.END)
+        entry_password.delete(0, tk.END)
+        entry_website.focus()
+    else:
+        pass
 
 
 # ---------------------------- UI SETUP ------------------------------- #
