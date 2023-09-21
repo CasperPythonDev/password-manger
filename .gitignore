@@ -211,3 +211,4 @@ pyrightconfig.json
 
 # Own additions
 .vscode/
+storage/
