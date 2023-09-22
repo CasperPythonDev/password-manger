@@ -1,8 +1,26 @@
 import tkinter as tk
 from tkinter import messagebox
+import random
+from support_data import characters as c
+import pyperclip
 
 DEFAULT_USER = "xxx@gmail.com"  # add os and .env
+
+
 # ---------------------------- PASSWORD GENERATOR ------------------------------- #
+def generate_pw():
+    pw_letters = [random.choice(c.letters) for _ in range(random.randint(7, 10))]
+    pw_capital = [random.choice(c.capital) for _ in range(random.randint(2, 4))]
+    pw_numbers = [random.choice(c.numbers) for _ in range(random.randint(2, 5))]
+    pw_symbols = [random.choice(c.symbols) for _ in range(random.randint(2, 4))]
+
+    password_list = pw_letters + pw_capital + pw_numbers + pw_symbols
+    random.shuffle(password_list)
+    password = "".join(password_list)
+    pyperclip.copy(password)
+    entry_password.delete(0, tk.END)
+    entry_password.insert(index=0, string=password)
+
 
 # ---------------------------- SAVE PASSWORD ------------------------------- #
 path_storage = "storage/data.txt"
@@ -13,20 +31,22 @@ def store_pw():
     user = entry_user.get()
     pw = entry_password.get()
 
-    save = messagebox.askokcancel(
-        title=website,
-        message=f"These are the details entered: \nEmail: {user}\nPassword: {pw}",
-    )
-    if save:
-        data = f"email: {website} | user: {user} | pw: {pw}\n"
-
-        with open(path_storage, "a") as file:
-            file.write(data)
-        entry_website.delete(0, tk.END)
-        entry_password.delete(0, tk.END)
-        entry_website.focus()
+    if len(website) == 0 or len(pw) == 0:
+        messagebox.showinfo(
+            title="Error", message="Website and Password has to be filled"
+        )
     else:
-        pass
+        save = messagebox.askokcancel(
+            title=website,
+            message=f"These are the details entered: \nEmail: {user}\nPassword: {pw}",
+        )
+        if save:
+            data = f"email: {website} | user: {user} | pw: {pw}\n"
+            with open(path_storage, "a") as file:
+                file.write(data)
+            entry_website.delete(0, tk.END)
+            entry_password.delete(0, tk.END)
+            entry_website.focus()
 
 
 # ---------------------------- UI SETUP ------------------------------- #
@@ -63,7 +83,7 @@ entry_password = tk.Entry(width=21)
 entry_password.grid(column=1, row=3, sticky="EW")
 
 # Button x 2
-button_generate = tk.Button(text="Generate Password")
+button_generate = tk.Button(text="Generate Password", command=generate_pw)
 button_generate.grid(column=2, row=3, sticky="EW")
 
 button_add = tk.Button(text="Add", width=36, command=store_pw)
