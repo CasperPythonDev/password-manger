@@ -3,8 +3,11 @@ from tkinter import messagebox
 import random
 from support_data import characters as c
 import pyperclip
+import json
+from pathlib import Path
 
 DEFAULT_USER = "xxx@gmail.com"  # add os and .env
+path_storage = Path("storage/data.json")
 
 
 # ---------------------------- PASSWORD GENERATOR ------------------------------- #
@@ -23,10 +26,18 @@ def generate_pw():
 
 
 # ---------------------------- SAVE PASSWORD ------------------------------- #
-path_storage = "storage/data.txt"
+
+
+def dir_exist(file_path):
+    dummy_data = {}
+    if not file_path.parent.is_dir() or not file_path.is_file():
+        file_path.parent.mkdir(parents=True, exist_ok=True)
+        with open(file_path, "w") as file:
+            json.dump(dummy_data, file, indent=4)
 
 
 def store_pw():
+    dir_exist(path_storage)
     website = entry_website.get()
     user = entry_user.get()
     pw = entry_password.get()
@@ -36,14 +47,23 @@ def store_pw():
             title="Error", message="Website and Password has to be filled"
         )
     else:
-        save = messagebox.askokcancel(
-            title=website,
-            message=f"These are the details entered: \nEmail: {user}\nPassword: {pw}",
-        )
-        if save:
-            data = f"email: {website} | user: {user} | pw: {pw}\n"
-            with open(path_storage, "a") as file:
-                file.write(data)
+        data_dict = {
+            website: {
+                "user": user,
+                "password": pw,
+            },
+        }
+        #    save = messagebox.askokcancel(
+        #        title=website,
+        #        message=f"These are the details entered: \nEmail: {user}\nPassword: {pw}",
+        #    )
+        #    if save:
+
+        with open(path_storage, "r") as file:
+            data = json.load(file)
+            data.update(data_dict)
+        with open(path_storage, "w") as file:
+            json.dump(data, file, indent=4)
             entry_website.delete(0, tk.END)
             entry_password.delete(0, tk.END)
             entry_website.focus()
@@ -88,7 +108,6 @@ button_generate.grid(column=2, row=3, sticky="EW")
 
 button_add = tk.Button(text="Add", width=36, command=store_pw)
 button_add.grid(column=1, row=4, columnspan=2, sticky="EW")
-
 
 # UI logic above this line
 app.mainloop()

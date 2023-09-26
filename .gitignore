@@ -212,5 +212,6 @@ pyrightconfig.json
 # Own additions
 .vscode/
 storage/
-test.py
+test*.py
 support_data/__pycache__/
+test*/
