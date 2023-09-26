@@ -10,6 +10,27 @@ DEFAULT_USER = "xxx@gmail.com"  # add os and .env
 path_storage = Path("storage/data.json")
 
 
+# ---------------------------- SEARCH WEBSITE ------------------------------- #
+def search():
+    dir_exist(path_storage)
+    key = entry_website.get()
+    with open(path_storage, "r") as file:
+        data = json.load(file)
+    # Handle empty string?
+    if key in data:
+        values = data[key]
+        user = values.get("user", "Wrong key")
+        password = values.get("password", "Wrong key")
+        # print(f"user: {user}\npw: {password}")
+        # entry_password.delete(0, tk.END)
+        # entry_password.insert(index=0, string=password)
+        pyperclip.copy(password)
+        messagebox.showinfo(title=key, message=f"User: {user}\nPassword: {password}")
+    else:
+        # print("not in data")
+        messagebox.showinfo(title="Error", message="Website not stored")
+
+
 # ---------------------------- PASSWORD GENERATOR ------------------------------- #
 def generate_pw():
     pw_letters = [random.choice(c.letters) for _ in range(random.randint(7, 10))]
@@ -91,23 +112,25 @@ label_password = tk.Label(text="Password:")
 label_password.grid(column=0, row=3)
 
 # Input x 3
-entry_website = tk.Entry(width=35)
-entry_website.grid(column=1, row=1, columnspan=2, sticky="EW")
+entry_website = tk.Entry()  # width=35
+entry_website.grid(column=1, row=1, sticky="EW")
 entry_website.focus()
 
-entry_user = tk.Entry(width=35)
+entry_user = tk.Entry()  # width=35
 entry_user.grid(column=1, row=2, columnspan=2, sticky="EW")
 entry_user.insert(index=tk.END, string=DEFAULT_USER)
 
-entry_password = tk.Entry(width=21)
+entry_password = tk.Entry()  # width=21
 entry_password.grid(column=1, row=3, sticky="EW")
 
-# Button x 2
+# Button x 3
 button_generate = tk.Button(text="Generate Password", command=generate_pw)
 button_generate.grid(column=2, row=3, sticky="EW")
 
-button_add = tk.Button(text="Add", width=36, command=store_pw)
+button_add = tk.Button(text="Add", width=35, command=store_pw)
 button_add.grid(column=1, row=4, columnspan=2, sticky="EW")
 
-# UI logic above this line
+button_search = tk.Button(text="Search", command=search)
+button_search.grid(column=2, row=1, columnspan=1, sticky="EW")
+# UI logic above this line #
 app.mainloop()
